@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Loan Saver Calculator — compare normal mortgage repayment with investment-assisted early settlement.">
+<title>Loan Saver Calculator</title>
+<style>
+:root{
+  --navy:#0b3b78; --blue:#0b78e3; --blue2:#eaf4ff; --green:#079455;
+  --green2:#e9fbf2; --orange:#f45b16; --orange2:#fff2e9;
+  --ink:#18324f; --muted:#64748b; --line:#dbe7f2; --bg:#f4f8fc;
+  --white:#fff; --shadow:0 10px 30px rgba(24,50,79,.09);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink)}
+button,input{font:inherit}
+.header{
+  color:#fff; min-height:112px; position:relative; overflow:hidden;
+  background:linear-gradient(110deg,#062f61 0%,#1266b7 55%,#0a477d 100%);
+}
+.header:after{content:"";position:absolute;inset:0;background:
+ radial-gradient(circle at 15% 25%,rgba(255,255,255,.12),transparent 28%),
+ radial-gradient(circle at 85% 10%,rgba(255,255,255,.08),transparent 25%)}
+.nav{position:relative;z-index:1;max-width:1280px;margin:auto;padding:18px 24px;display:flex;align-items:center;gap:28px}
+.brand{display:flex;align-items:center;gap:12px;min-width:390px}
+.logo{width:48px;height:48px;border-radius:13px;background:#fff;color:var(--blue);display:grid;place-items:center;font-size:26px;font-weight:900;box-shadow:0 6px 15px rgba(0,0,0,.15)}
+.brand h1{margin:0;font-size:28px;letter-spacing:-.5px}.brand p{margin:2px 0 0;opacity:.9}
+.navlinks{display:flex;gap:25px;margin-left:auto}.navlinks a{color:#fff;text-decoration:none;font-size:14px;opacity:.9}.navlinks a:hover{opacity:1;text-decoration:underline}
+.slogan{font-size:19px;font-weight:700;font-style:italic;margin-left:auto;text-align:right;line-height:1.1}
+.wrap{max-width:1280px;margin:18px auto 40px;padding:0 16px}
+.card{background:var(--white);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:18px}
+.section{padding:18px}.section.blue{border-color:#b9dcff}.section.green{border-color:#a9e5c5}.section.orange{border-color:#ffd0aa}
+.section-head{display:flex;align-items:center;gap:13px;margin-bottom:14px}.num{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;font-size:21px;flex:0 0 auto}.num.blue{background:var(--blue)}.num.green{background:var(--green)}.num.orange{background:var(--orange)}
+.section-head h2{margin:0;color:var(--navy);font-size:22px}.section-head p{margin:2px 0 0;color:var(--muted);font-size:13px}
+.grid3{display:grid;grid-template-columns:1.08fr .85fr .85fr;gap:18px}
+.grid3.mtrp{grid-template-columns:1fr 1fr 1fr}.grid3.target{grid-template-columns:1fr 1fr 1fr}
+.form{padding:4px 2px}.row{display:grid;grid-template-columns:155px 1fr;align-items:center;gap:10px;margin:10px 0}.row label{font-weight:600;font-size:14px}.field{display:flex;border:1px solid #cbd8e6;border-radius:8px;background:#fff;overflow:hidden}.prefix,.suffix{padding:9px 11px;background:#f2f6fa;color:#50657c;font-size:13px;white-space:nowrap}.field input{width:100%;border:0;outline:0;padding:9px 10px;color:var(--ink);background:#fff}.field input:focus{box-shadow:inset 0 0 0 2px #8cc5ff}.actions{display:flex;gap:10px;margin-top:12px}.btn{border:0;border-radius:9px;padding:10px 20px;font-weight:800;cursor:pointer}.btn.primary{background:var(--blue);color:#fff}.btn.green{background:var(--green);color:#fff}.btn.orange{background:var(--orange);color:#fff}.btn.ghost{background:#fff;border:1px solid #cbd8e6;color:#37506a}
+.result{border-radius:12px;padding:15px;background:linear-gradient(145deg,#eef7ff,#f9fcff);height:100%}.result.green{background:linear-gradient(145deg,#effcf5,#fbfffd)}.result.orange{background:linear-gradient(145deg,#fff5ed,#fffdfb)}
+.result h3{margin:0 0 9px;color:var(--navy);font-size:16px}.result h3 span{font-size:25px;display:block;margin-top:3px}
+.metric{display:flex;justify-content:space-between;gap:12px;border-top:1px solid rgba(120,150,180,.2);padding:7px 0;font-size:13px}.metric b{color:var(--navy);text-align:right}.metric .neg{color:#dc3b36}
+.donutbox{display:flex;align-items:center;gap:14px}.donut{width:116px;height:116px;border-radius:50%;background:conic-gradient(var(--blue) 0 54%,#70c4f7 54% 100%);display:grid;place-items:center;flex:0 0 auto}.donut:after{content:"";width:72px;height:72px;background:#fff;border-radius:50%}.legend{font-size:12px}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}.dot.p{background:var(--blue)}.dot.i{background:#70c4f7}
+.table-card{overflow:hidden}.table-head{background:linear-gradient(90deg,#0b4f94,#1268b5);color:#fff;padding:14px 18px;display:flex;align-items:center;justify-content:space-between}.table-head h2{margin:0;font-size:19px}.csv{border:0;background:#fff;color:#0b4f94;padding:8px 14px;border-radius:8px;font-weight:800;cursor:pointer}.table-scroll{overflow:auto;max-height:560px}.schedule{width:100%;border-collapse:collapse;font-size:12px;background:#fff}.schedule th{position:sticky;top:0;background:#edf5fc;color:#0b4f94;padding:9px 8px;z-index:1}.schedule td{padding:7px 8px;border-top:1px solid #edf1f5;text-align:right;white-space:nowrap}.schedule td:first-child,.schedule th:first-child{text-align:center}.schedule tr:nth-child(even){background:#fbfdff}
+.note{font-size:12px;color:var(--muted);padding:12px 18px}.footer{display:flex;justify-content:space-between;gap:15px;align-items:center;color:#65768a;font-size:12px;padding:12px 2px 30px}.footer a{color:#48617c;text-decoration:none;margin-left:14px}
+.toast{position:fixed;right:18px;bottom:18px;background:#123c6e;color:#fff;padding:12px 16px;border-radius:9px;box-shadow:var(--shadow);opacity:0;transform:translateY(10px);pointer-events:none;transition:.25s}.toast.show{opacity:1;transform:none}
+@media(max-width:1050px){.grid3,.grid3.mtrp,.grid3.target{grid-template-columns:1fr 1fr}.brand{min-width:0}.slogan{display:none}}
+@media(max-width:700px){.nav{padding:14px 16px}.brand h1{font-size:21px}.brand p{font-size:12px}.navlinks{display:none}.wrap{padding:0 10px}.grid3,.grid3.mtrp,.grid3.target{grid-template-columns:1fr}.row{grid-template-columns:1fr;gap:4px}.actions .btn{flex:1}.footer{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="nav">
+    <div class="brand"><div class="logo">⌂</div><div><h1>Loan Saver Calculator</h1><p>Plan smarter. Save more. Be debt free sooner.</p></div></div>
+    <nav class="navlinks"><a href="#loan">Home</a><a href="#mtrp">MTRP</a><a href="#target">Early Settlement</a><a href="#schedule">Schedule</a></nav>
+    <div class="slogan">A Brighter<br>Financial Future</div>
+  </div>
+</header>
+
+<main class="wrap">
+<section id="loan" class="card section blue">
+  <div class="section-head"><div class="num blue">1</div><div><h2>Loan Information</h2><p>Enter your loan details to see the standard repayment summary.</p></div></div>
+  <div class="grid3">
+    <div class="form">
+      <div class="row"><label>Loan Amount</label><div class="field"><span class="prefix">RM</span><input id="loanAmount" type="number" min="0" step="100" value="850000"></div></div>
+      <div class="row"><label>Annual Interest Rate</label><div class="field"><input id="rate" type="number" min="0" step=".01" value="4.5"><span class="suffix">%</span></div></div>
+      <div class="row"><label>Loan in Years</label><div class="field"><input id="years" type="number" min="1" step="1" value="30"><span class="suffix">years</span></div></div>
+      <div class="row"><label>First Payment Date</label><div class="field"><input id="firstDate" type="date" value="2021-12-01"></div></div>
+      <div class="actions"><button class="btn primary" onclick="calculateAll()">▣ Calculate</button><button class="btn ghost" onclick="resetAll()">Reset</button></div>
+    </div>
+    <div class="result"><h3>▣ Monthly Payment<span id="monthlyPayment">RM 4,306.83</span></h3>
+      <div class="metric"><span>Number of Payment</span><b id="numPayments">360</b></div>
+      <div class="metric"><span>Total Payment Made</span><b id="totalPayment">RM 1,550,458.80</b></div>
+      <div class="metric"><span>Total Interest Paid</span><b id="totalInterest">RM 700,458.80</b></div>
+      <div class="metric"><span>Age at Time of Settlement</span><b id="settleAge">—</b></div>
+    </div>
+    <div class="result"><h3>▥ Loan Summary</h3><div class="donutbox"><div class="donut"></div><div class="legend"><p><span class="dot p"></span>Principal<br><b id="legendPrincipal">RM 850,000.00</b></p><p><span class="dot i"></span>Interest<br><b id="legendInterest">RM 700,458.80</b></p></div></div>
+      <div class="metric"><span>Total Payment</span><b id="legendTotal">RM 1,550,458.80</b></div>
+    </div>
+  </div>
+</section>
+
+<section id="mtrp" class="card section green">
+  <div class="section-head"><div class="num green">2</div><div><h2>MTRP — Save More with Extra Investment</h2><p>Invest regularly and use the investment value to offset the remaining mortgage balance.</p></div></div>
+  <div class="grid3 mtrp">
+    <div class="form">
+      <div class="row"><label>Initial Investment</label><div class="field"><span class="prefix">RM</span><input id="initialInv" type="number" min="0" step="100" value="1000"></div></div>
+      <div class="row"><label>Rate of Return</label><div class="field"><input id="returnRate" type="number" step=".01" value="10"><span class="suffix">%</span></div></div>
+      <div class="row"><label>Regular Monthly Saving</label><div class="field"><span class="prefix">RM</span><input id="monthlySave" type="number" min="0" step="50" value="1000"></div></div>
+      <div class="actions"><button class="btn green" onclick="calculateAll()">▥ Calculate</button><button class="btn ghost" onclick="resetMtrp()">Reset</button></div>
+    </div>
+    <div class="result green"><h3>🍃 Investment & Savings Result</h3>
+      <div class="metric"><span>Total Investment</span><b id="mtrpContrib">—</b></div>
+      <div class="metric"><span>Amount to Offset Mortgage Loan</span><b id="mtrpOffset">—</b></div>
+      <div class="metric"><span>Total Interest Saved</span><b id="mtrpInterestSaved">—</b></div>
+    </div>
+    <div class="result green"><h3>🐷 Loan Improvement Results</h3>
+      <div class="metric"><span>No of Years Saved</span><b id="mtrpYearsSaved">—</b></div>
+      <div class="metric"><span>Total Mortgage Saved</span><b id="mtrpMortgageSaved">—</b></div>
+      <div class="metric"><span>Number of Payment</span><b id="mtrpPayments">—</b></div>
+      <div class="metric"><span>Total Payment Made</span><b id="mtrpTotalPaid">—</b></div>
+      <div class="metric"><span>Total Interest Paid</span><b id="mtrpTotalInterest">—</b></div>
+      <div class="metric"><span>Age at Time of Settlement</span><b id="mtrpAge">—</b></div>
+    </div>
+  </div>
+</section>
+
+<section id="target" class="card section orange">
+  <div class="section-head"><div class="num orange">3</div><div><h2>Set a Target Age to Settle Loan</h2><p>Enter a target age and available lump sum to estimate how soon the loan can be settled.</p></div></div>
+  <div class="grid3 target">
+    <div class="form">
+      <div class="row"><label>Age to Settle Loan</label><div class="field"><input id="targetAge" type="number" min="18" max="100" value="55"><span class="suffix">years</span></div></div>
+      <div class="row"><label>Rate of Return</label><div class="field"><input id="targetReturn" type="number" step=".01" value="10"><span class="suffix">%</span></div></div>
+      <div class="row"><label>Initial Lump Sum</label><div class="field"><span class="prefix">RM</span><input id="lumpSum" type="number" min="0" step="500" value="50000"></div></div>
+      <div class="actions"><button class="btn orange" onclick="calculateAll()">◎ Calculate</button><button class="btn ghost" onclick="resetTarget()">Reset</button></div>
+    </div>
+    <div class="result orange"><h3>🎯 Early Settlement Result</h3>
+      <div class="metric"><span>Loan Balance at Target Age</span><b id="targetBalance">—</b></div>
+      <div class="metric"><span>Year to Settle</span><b id="targetYears">—</b></div>
+      <div class="metric"><span>Lump Sum Required Today</span><b id="requiredToday">—</b></div>
+      <div class="metric"><span>Monthly Investment Needed</span><b id="requiredMonthly">—</b></div>
+    </div>
+    <div class="result orange"><h3>🪙 Using Lump Sum Only</h3>
+      <div class="metric"><span>Initial Lump Sum</span><b id="lumpDisplay">—</b></div>
+      <div class="metric"><span>Monthly Investment Needed</span><b id="lumpMonthly">—</b></div>
+      <div class="metric"><span>Projected Value at Target</span><b id="targetFV">—</b></div>
+    </div>
+  </div>
+</section>
+
+<section id="schedule" class="card table-card">
+  <div class="table-head"><h2>▤ Loan Amortization Schedule</h2><button class="csv" onclick="exportCSV()">⇩ Export to CSV</button></div>
+  <div class="table-scroll"><table class="schedule"><thead><tr><th>No</th><th>Year</th><th>Age</th><th>Due Date</th><th>Payment (RM)</th><th>Interest (RM)</th><th>Principal (RM)</th><th>Balance (RM)</th><th>Investment Return (RM)</th></tr></thead><tbody id="scheduleBody"></tbody></table></div>
+  <div class="note" id="scheduleNote">Showing the amortization schedule generated from your inputs.</div>
+</section>
+
+<div class="footer"><div>© 2026 Loan Saver Calculator. All rights reserved.</div><div><a href="#">Disclaimer</a><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Contact</a></div><div><b>Smarter Planning</b><br><b>Greater Freedom</b></div></div>
+</main>
+<div id="toast" class="toast">Calculation updated</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const money=n=>'RM '+Number(n||0).toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2});
+const num=n=>Number(n).toLocaleString('en-MY',{maximumFractionDigits:2});
+function parseDate(v){return new Date(v+'T00:00:00')}
+function addMonths(date,n){const d=new Date(date);d.setMonth(d.getMonth()+n);return d}
+function fmtDate(d){return d.toLocaleDateString('en-GB',{day:'2-digit',month:'2-digit',year:'numeric'})}
+function ageOn(d,dob){
+  const birth=new Date(dob+'T00:00:00'), x=new Date(d);
+  let a=x.getFullYear()-birth.getFullYear();
+  if(x.getMonth()<birth.getMonth() || (x.getMonth()===birth.getMonth()&&x.getDate()<birth.getDate())) a--;
+  return a;
+}
+// Default DOB is inferred from the reference example (31/12/1981). It can be changed here if required.
+const DEFAULT_DOB='1981-12-31';
+
+let state={rows:[],standard:{},mtrp:{}};
+
+function pmt(P,annual,months){
+  const r=annual/100/12;
+  if(r===0)return P/months;
+  return P*r/(1-Math.pow(1+r,-months));
+}
+function amortization(P,annual,months,firstDate){
+  const r=annual/100/12, pay=pmt(P,annual,months), rows=[];
+  let bal=P,totalInterest=0;
+  for(let i=1;i<=months;i++){
+    const interest=r?bal*r:0;
+    const payment=Math.min(pay,bal+interest);
+    const principal=payment-interest;
+    bal=Math.max(0,bal-principal);
+    totalInterest+=interest;
+    const due=addMonths(firstDate,i);
+    rows.push({no:i,year:due.getFullYear(),age:ageOn(due,DEFAULT_DOB),date:due,payment,interest,principal,balance:bal});
+    if(bal<=0.005)break;
+  }
+  return {pay,rows,totalInterest};
+}
+function fvInvestment(initial,monthly,annual,months){
+  const r=annual/100/12;
+  if(months<=0)return initial;
+  if(r===0)return initial+monthly*months;
+  return initial*Math.pow(1+r,months)+monthly*((Math.pow(1+r,months)-1)/r);
+}
+function pvLumpAtTarget(balance,annual,months){
+  const r=annual/100/12;
+  return r===0?balance:balance/Math.pow(1+r,months);
+}
+function monthlyForTarget(balance,initial,annual,months){
+  const r=annual/100/12;
+  const futureInitial=initial*Math.pow(1+r,months);
+  if(months<=0)return Math.max(0,balance-futureInitial);
+  if(r===0)return Math.max(0,(balance-futureInitial)/months);
+  return Math.max(0,(balance-futureInitial)*r/(Math.pow(1+r,months)-1));
+}
+
+function calculateAll(){
+  const P=Math.max(0,+$('loanAmount').value||0), annual=Math.max(0,+$('rate').value||0), years=Math.max(1,+$('years').value||1);
+  const months=Math.round(years*12), first=parseDate($('firstDate').value);
+  const a=amortization(P,annual,months,first);
+  const total=a.pay*a.rows.length;
+  state.standard={P,annual,months,first,...a,total};
+  $('monthlyPayment').textContent=money(a.pay); $('numPayments').textContent=a.rows.length;
+  $('totalPayment').textContent=money(total); $('totalInterest').textContent=money(a.totalInterest);
+  const finalDate=a.rows[a.rows.length-1]?.date; $('settleAge').textContent=finalDate?ageOn(finalDate,DEFAULT_DOB):'—';
+  $('legendPrincipal').textContent=money(P); $('legendInterest').textContent=money(a.totalInterest); $('legendTotal').textContent=money(total);
+
+  // MTRP: monthly investment is accumulated at the stated return; settlement occurs
+  // at the first month where the investment value reaches the mortgage balance.
+  const init=Math.max(0,+$('initialInv').value||0), rr=Math.max(0,+$('returnRate').value||0), save=Math.max(0,+$('monthlySave').value||0);
+  let mtrpMonth=a.rows.length, inv=init, invContrib=init, investReturn=0;
+  if(P>0){
+    for(let i=1;i<=a.rows.length;i++){
+      const r=rr/100/12;
+      const before=inv;
+      inv=inv*(1+r)+save;
+      investReturn += inv-before-save;
+      invContrib += save;
+      if(inv>=a.rows[i-1].balance){mtrpMonth=i;break}
+    }
+  }
+  const mrow=a.rows[Math.max(0,mtrpMonth-1)]||a.rows[a.rows.length-1];
+  const mTotalPaid=mrow.payment*mtrpMonth;
+  const mInterest=mrow.interest; // informational; exact interest recalculated below
+  let bal=P, intPaid=0;
+  const mr=Math.max(0,annual/100/12);
+  for(let i=1;i<=mtrpMonth;i++){const ii=mr?bal*mr:0; const pp=Math.min(a.pay,bal+ii); bal=Math.max(0,bal-(pp-ii)); intPaid+=ii}
+  const interestSaved=Math.max(0,a.totalInterest-intPaid);
+  const yearsSaved=Math.max(0,a.rows.length-mtrpMonth)/12;
+  const mortgageSaved=Math.max(0,total-mTotalPaid);
+  state.mtrp={mtrpMonth,inv,invContrib,interestSaved,yearsSaved,mortgageSaved,mTotalPaid,intPaid};
+  $('mtrpContrib').textContent=money(invContrib); $('mtrpOffset').textContent=money(Math.min(inv,mrow.balance));
+  $('mtrpInterestSaved').textContent=money(interestSaved); $('mtrpYearsSaved').textContent=num(yearsSaved);
+  $('mtrpMortgageSaved').textContent=money(mortgageSaved); $('mtrpPayments').textContent=mtrpMonth;
+  $('mtrpTotalPaid').textContent=money(mTotalPaid); $('mtrpTotalInterest').textContent=money(intPaid);
+  $('mtrpAge').textContent=mrow.age;
+
+  // Target-age scenario
+  const targetAge=Math.max(18,+$('targetAge').value||55), tr=Math.max(0,+$('targetReturn').value||0), lump=Math.max(0,+$('lumpSum').value||0);
+  const firstAge=ageOn(first,DEFAULT_DOB);
+  const monthsToTarget=Math.max(0,Math.round((targetAge-firstAge)*12));
+  const targetRow=a.rows[Math.min(a.rows.length-1,Math.max(0,monthsToTarget-1))];
+  const targetBalance=targetRow?targetRow.balance:0;
+  const requiredToday=pvLumpAtTarget(targetBalance,tr,monthsToTarget);
+  const reqMonthly=monthlyForTarget(targetBalance,lump,tr,monthsToTarget);
+  const targetFV=fvInvestment(lump,reqMonthly,tr,monthsToTarget);
+  $('targetBalance').textContent=money(targetBalance); $('targetYears').textContent=num(monthsToTarget/12);
+  $('requiredToday').textContent=money(requiredToday); $('requiredMonthly').textContent=money(reqMonthly);
+  $('lumpDisplay').textContent=money(lump); $('lumpMonthly').textContent=money(reqMonthly); $('targetFV').textContent=money(targetFV);
+
+  renderSchedule(a.rows); toast();
+}
+function renderSchedule(rows){
+  state.rows=rows;
+  $('scheduleBody').innerHTML=rows.map(r=>`<tr>
+    <td>${r.no}</td><td>${r.year}</td><td>${r.age}</td><td>${fmtDate(r.date)}</td>
+    <td>${num(r.payment)}</td><td>${num(r.interest)}</td><td>${num(r.principal)}</td><td>${num(r.balance)}</td><td>RM 0.00</td>
+  </tr>`).join('');
+  $('scheduleNote').textContent=`Showing ${rows.length} payment${rows.length===1?'':'s'} generated from your loan inputs. Scroll to see the full schedule.`;
+}
+function exportCSV(){
+  if(!state.rows.length)calculateAll();
+  const header=['No','Year','Age','Due Date','Payment (RM)','Interest (RM)','Principal (RM)','Balance (RM)','Investment Return (RM)'];
+  const lines=[header.join(',')];
+  state.rows.forEach(r=>lines.push([r.no,r.year,r.age,fmtDate(r.date),r.payment.toFixed(2),r.interest.toFixed(2),r.principal.toFixed(2),r.balance.toFixed(2),'0.00'].join(',')));
+  const blob=new Blob([lines.join('\\n')],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='loan-amortization-schedule.csv';a.click();URL.revokeObjectURL(a.href);
+}
+function resetAll(){location.reload()}
+function resetMtrp(){$('initialInv').value=1000;$('returnRate').value=10;$('monthlySave').value=1000;calculateAll()}
+function resetTarget(){$('targetAge').value=55;$('targetReturn').value=10;$('lumpSum').value=50000;calculateAll()}
+function toast(){const t=$('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1400)}
+document.querySelectorAll('input').forEach(i=>i.addEventListener('change',()=>calculateAll()));
+calculateAll();
+</script>
+</body>
+</html>
