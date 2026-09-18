@@ -65,6 +65,7 @@ button,input{font:inherit}
       <div class="row"><label>Loan Amount</label><div class="field"><span class="prefix">RM</span><input id="loanAmount" type="number" min="0" step="100" value="850000"></div></div>
       <div class="row"><label>Annual Interest Rate</label><div class="field"><input id="rate" type="number" min="0" step=".01" value="4.5"><span class="suffix">%</span></div></div>
       <div class="row"><label>Loan in Years</label><div class="field"><input id="years" type="number" min="1" step="1" value="30"><span class="suffix">years</span></div></div>
+      <div class="row"><label>Date of Birth (DOB)</label><div class="field"><input id="dob" type="date" value="1981-12-31"></div></div>
       <div class="row"><label>First Payment Date</label><div class="field"><input id="firstDate" type="date" value="2021-12-01"></div></div>
       <div class="actions"><button class="btn primary" onclick="calculateAll()">▣ Calculate</button><button class="btn ghost" onclick="resetAll()">Reset</button></div>
     </div>
@@ -151,9 +152,6 @@ function ageOn(d,dob){
   if(x.getMonth()<birth.getMonth() || (x.getMonth()===birth.getMonth()&&x.getDate()<birth.getDate())) a--;
   return a;
 }
-// Default DOB is inferred from the reference example (31/12/1981). It can be changed here if required.
-const DEFAULT_DOB='1981-12-31';
-
 let state={rows:[],standard:{},mtrp:{}};
 
 function pmt(P,annual,months){
@@ -161,7 +159,7 @@ function pmt(P,annual,months){
   if(r===0)return P/months;
   return P*r/(1-Math.pow(1+r,-months));
 }
-function amortization(P,annual,months,firstDate){
+function amortization(P,annual,months,firstDate,dob){
   const r=annual/100/12, pay=pmt(P,annual,months), rows=[];
   let bal=P,totalInterest=0;
   for(let i=1;i<=months;i++){
@@ -171,7 +169,7 @@ function amortization(P,annual,months,firstDate){
     bal=Math.max(0,bal-principal);
     totalInterest+=interest;
     const due=addMonths(firstDate,i);
-    rows.push({no:i,year:due.getFullYear(),age:ageOn(due,DEFAULT_DOB),date:due,payment,interest,principal,balance:bal});
+    rows.push({no:i,year:due.getFullYear(),age:ageOn(due,dob),date:due,payment,interest,principal,balance:bal});
     if(bal<=0.005)break;
   }
   return {pay,rows,totalInterest};
@@ -195,14 +193,17 @@ function monthlyForTarget(balance,initial,annual,months){
 }
 
 function calculateAll(){
+  const dob=$('dob').value;
+  if(!dob){ alert('Please enter your Date of Birth (DOB).'); return; }
   const P=Math.max(0,+$('loanAmount').value||0), annual=Math.max(0,+$('rate').value||0), years=Math.max(1,+$('years').value||1);
   const months=Math.round(years*12), first=parseDate($('firstDate').value);
-  const a=amortization(P,annual,months,first);
+  if(first < parseDate(dob)){ alert('First Payment Date cannot be earlier than Date of Birth.'); return; }
+  const a=amortization(P,annual,months,first,dob);
   const total=a.pay*a.rows.length;
   state.standard={P,annual,months,first,...a,total};
   $('monthlyPayment').textContent=money(a.pay); $('numPayments').textContent=a.rows.length;
   $('totalPayment').textContent=money(total); $('totalInterest').textContent=money(a.totalInterest);
-  const finalDate=a.rows[a.rows.length-1]?.date; $('settleAge').textContent=finalDate?ageOn(finalDate,DEFAULT_DOB):'—';
+  const finalDate=a.rows[a.rows.length-1]?.date; $('settleAge').textContent=finalDate?ageOn(finalDate,dob):'—';
   $('legendPrincipal').textContent=money(P); $('legendInterest').textContent=money(a.totalInterest); $('legendTotal').textContent=money(total);
 
   // MTRP: monthly investment is accumulated at the stated return; settlement occurs
@@ -237,7 +238,7 @@ function calculateAll(){
 
   // Target-age scenario
   const targetAge=Math.max(18,+$('targetAge').value||55), tr=Math.max(0,+$('targetReturn').value||0), lump=Math.max(0,+$('lumpSum').value||0);
-  const firstAge=ageOn(first,DEFAULT_DOB);
+  const firstAge=ageOn(first,dob);
   const monthsToTarget=Math.max(0,Math.round((targetAge-firstAge)*12));
   const targetRow=a.rows[Math.min(a.rows.length-1,Math.max(0,monthsToTarget-1))];
   const targetBalance=targetRow?targetRow.balance:0;
@@ -266,7 +267,10 @@ function exportCSV(){
   const blob=new Blob([lines.join('\\n')],{type:'text/csv;charset=utf-8'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='loan-amortization-schedule.csv';a.click();URL.revokeObjectURL(a.href);
 }
-function resetAll(){location.reload()}
+function resetAll(){
+  $('loanAmount').value=850000; $('rate').value=4.5; $('years').value=30; $('dob').value='1981-12-31'; $('firstDate').value='2021-12-01';
+  calculateAll();
+}
 function resetMtrp(){$('initialInv').value=1000;$('returnRate').value=10;$('monthlySave').value=1000;calculateAll()}
 function resetTarget(){$('targetAge').value=55;$('targetReturn').value=10;$('lumpSum').value=50000;calculateAll()}
 function toast(){const t=$('toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1400)}
